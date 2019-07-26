@@ -8,12 +8,17 @@ import { MemeGallery } from './components/MemeGallery';
 // importar cliente http axios
 import axios from 'axios';
 
+const MEME_EDITED_URL = "https://analytics.ticracia.com/static/meme_edited/";
+const MEME_GENERATOR_URL = "https://api.ticracia.com/api/v1/memes/new";
+const FACEBOOK_SHARE_URL = "https://www.facebook.com/sharer/sharer.php?u=#url";
+
 class App extends Component{
   state = {
     page: 1,
     isLoadingMemes: true,
-    memes: []
-  }
+    memes: [],
+    selectedMeme: null
+  };
 
   componentDidMount(){
     // al montarse el componente, cargar y renderizar los memes mediante la
@@ -63,6 +68,12 @@ class App extends Component{
     }
   }
 
+  selectMeme = (meme) => {
+    // COMPLETAR, asignar la variable selectedMeme del state con `meme` 
+    // como parametro de esta funcion
+    this.setState({ selectMeme: meme });
+  }
+
   render(){
     const { memes, isLoadingMemes } = this.state;
     return(
@@ -70,13 +81,15 @@ class App extends Component{
         <Row>
           <Col xs={6}>
             {/* POR HACER */}
+
           </Col>
           {/* Renderizar componente de MemeGallery */}
           <Col xs={6}>
             <MemeGallery
               data={memes}
               isLoading={isLoadingMemes}
-              loadMore={this.loadMore.bind(this)}
+              loadMore={this.loadMore}
+              selectMeme={this.selectMeme}
               />
           </Col>
         </Row>

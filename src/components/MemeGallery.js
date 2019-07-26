@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Spinner, Button, Row, Col, Badge } from 'reactstrap';
 
-export const MemeGallery = ({ data, isLoading, loadMore }) => {
+export const MemeGallery = ({ data, isLoading, loadMore, selectMeme }) => {
     // si la peticion http esta cargando, mostrar un spinner
     if(isLoading) {
         return (
@@ -21,7 +21,10 @@ export const MemeGallery = ({ data, isLoading, loadMore }) => {
                 return(
                     <Col key={e.id} xs={4}>
                         {/* Renderizar imagenes bajo el prefijo de la URL: https://api.ticracia.com/static/memes/ */}
-                        <img src={`https://api.ticracia.com/static/memes/${e.image}`} style={{width: 250, height: 250}} />
+                        <img 
+                            onClick={() => selectMeme(e)}
+                            src={`https://api.ticracia.com/static/memes/${e.image}`} 
+                            style={{width: 250, height: 250}} />
                         <Badge color={'secondary'}> { e.name } </Badge>
                     </Col>
                 );
