@@ -24,7 +24,7 @@ export const MemeGallery = ({ data, isLoading, loadMore, selectMeme }) => {
                         <img 
                             onClick={() => selectMeme(e)}
                             src={`https://api.ticracia.com/static/memes/${e.image}`} 
-                            style={{width: 250, height: 250}} />
+                            style={{width: 200, height: 200}} />
                         <Badge color={'secondary'}> { e.name } </Badge>
                     </Col>
                 );

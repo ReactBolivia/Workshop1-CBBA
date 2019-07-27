@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Col, Row } from 'reactstrap'; 
 // importar componente de galeria de memes
 import { MemeGallery } from './components/MemeGallery';
+import { EditMeme } from './components/EditMeme';
+import { MyMemes } from './components/MyMemes';
 // importar cliente http axios
 import axios from 'axios';
 
@@ -17,7 +19,11 @@ class App extends Component{
     page: 1,
     isLoadingMemes: true,
     memes: [],
-    selectedMeme: null
+    selectedMeme: null,
+    upperText: '',
+    lowerText: '',
+    isUploading: false,
+    myMemes: [],
   };
 
   componentDidMount(){
@@ -38,7 +44,7 @@ class App extends Component{
     this.setState({ isLoadingMemes: false });
     if(res.data.success){
       // en caso de exito, pasar array res.data.memes al state
-      this.setState({ memes: res.data.memes });
+      this.setState({ memes: res.data.memes, selectedMeme: res.data.memes[0] });
     }else{
       // en caso de error, mostrar un alert
       alert('Error al cargar los memes')
@@ -71,17 +77,66 @@ class App extends Component{
   selectMeme = (meme) => {
     // COMPLETAR, asignar la variable selectedMeme del state con `meme` 
     // como parametro de esta funcion
-    this.setState({ selectMeme: meme });
+    this.setState({ selectedMeme: meme });
+  }
+
+  changeInput = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+
+  postMeme = async (data) => {
+    try{
+      const { upperText, lowerText, selectedMeme, myMemes } = this.state;
+      if(upperText.trim() === '' || lowerText.trim() === ''){
+        return alert('Debe llenar un texto superior e inferior');
+      }
+      if(!selectedMeme){
+        return alert('Debe seleccionar un meme');
+      }
+      this.setState({ isUploading: true });
+
+      const res = await axios.post(MEME_GENERATOR_URL, {
+                 memeId: selectedMeme.id, 
+                 upper: upperText, 
+                 lower: lowerText 
+                });
+      this.setState({ isUploading: false });
+      
+      if(res.data.success){
+        // si la peticion tiene exito, actualizar el array memes con el nuevo array obtenido del
+        // servicio web
+        const updated = [...myMemes, res.data.meme];
+        // actualizar el state memes
+        this.setState({ myMemes: updated, upperText: '', lowerText: '' });
+      }else{
+        alert('Error al cargar subir su meme')
+      }
+    }catch(e){
+      console.log(e);
+      alert('Hubo un error en el servidor o su conexión a internet');
+    }
   }
 
   render(){
-    const { memes, isLoadingMemes } = this.state;
+    const { memes, isLoadingMemes, selectedMeme, upperText, lowerText, isUploading, myMemes } = this.state;
     return(
       <Container fluid>
         <Row>
           <Col xs={6}>
             {/* POR HACER */}
-
+            <EditMeme
+              inputUpper={upperText}
+              inputLower={lowerText}
+              selectedMeme={selectedMeme}
+              uploadMeme={this.postMeme}
+              isLoading={isUploading}
+              changeInput={this.changeInput}
+              />
+            <MyMemes 
+              data={myMemes}
+              />
           </Col>
           {/* Renderizar componente de MemeGallery */}
           <Col xs={6}>
